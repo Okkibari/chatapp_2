@@ -17,8 +17,12 @@ import com.example.chatapp.Model.User;
 import com.example.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
@@ -27,6 +31,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     private Context mContext;
     private List<Chat> mChat;
     private String imageurl;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a");
 
     FirebaseUser fuser;
 
@@ -49,7 +54,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MessageAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         Chat chat = mChat.get(position);
 
@@ -70,6 +75,21 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         } else {
             holder.txt_seen.setVisibility(View.GONE);
         }
+
+        long unixTime = (long) mChat.get(position).timestamp;
+        Date date = new Date(unixTime);
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+        String time = simpleDateFormat.format(date);
+        holder.message_timestamp.setText(time);
+
+        /*
+        private void configureMyChatViewHolder(final MyChatViewHolder myChatViewHolder, int position) {
+            Chat chat = mChats.get(position);
+            SimpleDateFormat sfd = new SimpleDateFormat("hh:mm a");
+            String date=sfd.format(new Date(chat.timestamp).getTime());
+            myChatViewHolder.senderMsgTime.setText(date);
+        }
+        */
     }
 
     @Override
@@ -82,6 +102,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public TextView show_message;
         public ImageView profile_image;
         public TextView txt_seen;
+        public TextView message_timestamp;
+        public Object timestamp;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -89,6 +111,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             show_message = itemView.findViewById(R.id.show_message);
             profile_image = itemView.findViewById(R.id.profile_image);
             txt_seen = itemView.findViewById(R.id.txt_seen);
+            message_timestamp = itemView.findViewById(R.id.message_timestamp);
         }
     }
 
